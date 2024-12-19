@@ -8,7 +8,7 @@
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 0;">
     <div style="text-align: center; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 80%; max-width: 500px;">
         <h1 style="color: #333; font-size: 24px;">بحث عن الهاتف المسروق</h1>
-        <input type="number" id="searchInput" placeholder="أدخل الرقم هنا" style="padding: 10px; width: 80%; margin: 15px 0; border: 2px solid #ccc; border-radius: 5px; font-size: 16px;">
+        <input type="text" id="searchInput" placeholder="أدخل الرقم أو السيريال هنا" style="padding: 10px; width: 80%; margin: 15px 0; border: 2px solid #ccc; border-radius: 5px; font-size: 16px;">
         <button onclick="searchNumber()" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
             بحث
         </button>
@@ -16,17 +16,17 @@
     </div>
 
     <script>
-        // هنا يمكنك إضافة الأرقام الصحيحة التي تعتقد أنها تشير إلى جهاز مسروق
-        const stolenDevices = [123456, 869404030672236, 865812030619489 ,0000 ,869404030672228,813E9226 ]; // استبدل هذه الأرقام بالأرقام الصحيحة
+        // هنا يمكنك إضافة السيريالات أو الأرقام التي تحتوي على أحرف والتي تعتقد أنها تشير إلى جهاز مسروق
+        const stolenDevices = ['123456', '869404030672236', '865812030619489', '0000', '869404030672228', '813HEDU9226KL', 'A123BCD', 'XYZ9990']; // استبدل هذه بالقيم الصحيحة
 
         function searchNumber() {
-            const input = parseInt(document.getElementById('searchInput').value);
+            const input = document.getElementById('searchInput').value.trim(); // الحصول على القيمة المدخلة
             const result = document.getElementById('result');
             
             // إعادة تعيين الألوان إلى اللون الافتراضي
             result.style.color = '#444';
 
-            if (!isNaN(input)) {
+            if (input !== '') {
                 if (stolenDevices.includes(input)) {
                     result.textContent = 'جهاز مسروق';
                     result.style.color = 'red'; // اللون الأحمر لجهاز مسروق
@@ -35,7 +35,7 @@
                     result.style.color = 'green'; // اللون الأخضر للجهاز غير المسروق
                 }
             } else {
-                result.textContent = 'يرجى إدخال رقم صحيح للبحث عنه.';
+                result.textContent = 'يرجى إدخال رقم أو سيريال صحيح للبحث عنه.';
                 result.style.color = 'orange'; // اللون البرتقالي إذا كانت القيمة غير صحيحة
             }
         }
