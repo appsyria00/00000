@@ -63,10 +63,10 @@
             background-color: #ffe6e6;
             color: red;
             font-weight: bold;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px; /* تقليل الحشوة */
+            margin-top: 10px; /* تقليل الهامش العلوي */
+            border-radius: 5px; /* تقليل نصف القطر */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* تقليل الظل */
             cursor: pointer;
             text-align: center;
         }
@@ -119,30 +119,4 @@
         // وظيفة البحث
         function searchNumber() {
             const input = document.getElementById('searchInput').value.trim(); // قراءة النص المدخل
-            const result = document.getElementById('result'); // مكان عرض النتيجة
-
-            // التحقق من الإدخال
-            if (input !== '') {
-                if (stolenDevices.includes(input)) {
-                    result.innerHTML = `
-                        <div class="red-box" onclick="contactOnWhatsApp()">
-                            <strong>تحذير: جهاز مسروق</strong>
-                            <p>اضغط هنا للتواصل مع الرقم المخصص</p>
-                        </div>
-                    `;
-                } else {
-                    result.innerHTML = '<p class="green">الجهاز غير مسروق.</p>';
-                }
-            } else {
-                result.innerHTML = '<p class="orange">يرجى إدخال رقم أو سيريال صحيح للبحث عنه.</p>';
-            }
-        }
-
-        // وظيفة التواصل عبر WhatsApp
-        function contactOnWhatsApp() {
-            const phoneNumber = '+17793867303'; // رقم WhatsApp
-            window.open(`https://wa.me/${phoneNumber}`, '_blank');
-        }
-    </script>
-</body>
-</html>
+            const result = document.getElementById('result'); // مكان عرض4
