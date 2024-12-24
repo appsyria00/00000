@@ -59,10 +59,20 @@
             margin-top: 20px;
         }
 
-        /* ألوان الرسائل */
-        .red {
+        .red-box {
+            background-color: #ffe6e6;
             color: red;
             font-weight: bold;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .red-box:hover {
+            background-color: #ffcccc;
         }
 
         .green {
@@ -76,7 +86,7 @@
         <h1 class="search-title">بحث عن الهاتف المسروق</h1>
         <input type="text" id="searchInput" placeholder="أدخل الرقم أو السيريال هنا">
         <button onclick="searchNumber()">بحث</button>
-        <p id="result"></p>
+        <div id="result"></div>
     </div>
 
     <script>
@@ -114,16 +124,24 @@
             // التحقق من الإدخال
             if (input !== '') {
                 if (stolenDevices.includes(input)) {
-                    result.innerHTML = '<strong>تحذير: جهاز مسروق</strong>';
-                    result.className = 'red';
+                    result.innerHTML = `
+                        <div class="red-box" onclick="contactOnWhatsApp()">
+                            <strong>تحذير: جهاز مسروق</strong>
+                            <p>اضغط هنا للتواصل مع الرقم المخصص</p>
+                        </div>
+                    `;
                 } else {
-                    result.innerHTML = 'الجهاز غير مسروق.';
-                    result.className = 'green';
+                    result.innerHTML = '<p class="green">الجهاز غير مسروق.</p>';
                 }
             } else {
-                result.textContent = 'يرجى إدخال رقم أو سيريال صحيح للبحث عنه.';
-                result.className = 'orange';
+                result.innerHTML = '<p class="orange">يرجى إدخال رقم أو سيريال صحيح للبحث عنه.</p>';
             }
+        }
+
+        // وظيفة التواصل عبر WhatsApp
+        function contactOnWhatsApp() {
+            const phoneNumber = '+17793867303'; // رقم WhatsApp
+            window.open(`https://wa.me/${phoneNumber}`, '_blank');
         }
     </script>
 </body>
