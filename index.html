@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خانة البحث</title>
-    <!-- أنماط CSS -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,14 +56,19 @@
 
         #result {
             font-size: 18px;
-            color: #444;
             margin-top: 20px;
         }
 
         /* ألوان الرسائل */
-        .red { color: red; }
-        .green { color: green; }
-        .orange { color: orange; }
+        .red {
+            color: red;
+            font-weight: bold;
+        }
+
+        .green {
+            color: green;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -75,12 +79,11 @@
         <p id="result"></p>
     </div>
 
-    <!-- كود JavaScript -->
     <script>
-        // قائمة بالأجهزة المسروقة (سيريالات وأرقام)
+        // قائمة الأجهزة المسروقة
         const stolenDevices = [
             '123456', '869404030672236', '865812030619489', '0000', '869404030672228', 
-            '813HEDU9226KL', 'A123BCD', 'XYZ9990', '353789912998888', '868918047999408', 
+            '813HEDU9226KL', 'A123BCD', 'XYZ9990', '353789912998888', '868918047999408',
             '868918047999416', '30246/30W401157', '353789912998896', '112333741J008861', 
             '862635040704322', '862635040674319', 'MLTDU19125002780', '352848075271847', 
             '863184048369274', '863184048419285', 'DUJ6R20818003220', '860537057074791', 
@@ -111,10 +114,10 @@
             // التحقق من الإدخال
             if (input !== '') {
                 if (stolenDevices.includes(input)) {
-                    result.textContent = 'جهاز مسروق';
+                    result.innerHTML = '<strong>تحذير: جهاز مسروق</strong>';
                     result.className = 'red';
                 } else {
-                    result.textContent = 'الجهاز غير مسروق.';
+                    result.innerHTML = 'الجهاز غير مسروق.';
                     result.className = 'green';
                 }
             } else {
